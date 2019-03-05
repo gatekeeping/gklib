@@ -5,7 +5,9 @@ class GK_Gateway play
 	GK_Zone zone;
 	int templateFace; // direction it's facing in template
 	int face; // direction it's facing on playfield
-	int portals[GK.MAX_GATEWAY_LINES]; // list of portal line indices
+	
+	array<int> portals;
+	int gatewayLines;
 	
 	bool assigned;
 	bool placed;
@@ -14,7 +16,8 @@ class GK_Gateway play
 		let p = new();
 		p.zone = z;
 		p.templateFace = f;
-		for (let i = 0; i < GK.MAX_GATEWAY_LINES; i++) p.portals[i] = -1;
+		p.gatewayLines = z.dungeon.config.gatewayLines;
+		for (let i = 0; i < p.gatewayLines; i++) p.portals.push(-1);
 		return p;
 	}
 	
@@ -36,7 +39,7 @@ class GK_Gateway play
 	void assign(GK_Gateway other) {
 		if (other == null) return;
 				
-		let n = GK.MAX_GATEWAY_LINES - 1;
+		let n = gatewayLines - 1;
 		for (let i = 0; i <= n; i++) {
 			let iA = self.portals[i];
 			let iB = other.portals[n - i];
@@ -74,7 +77,7 @@ class GK_Gateway play
 		if (a.zone == b.zone) return false;
 		
 		// match all portal styles
-		let n = GK.MAX_GATEWAY_LINES - 1;
+		let n = a.gatewayLines - 1;
 		for (let i = 0; i <= n; i++) {
 			let iA = a.portals[i];
 			let iB = b.portals[n - i];

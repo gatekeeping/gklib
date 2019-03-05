@@ -11,8 +11,8 @@ class GK_Template play
 	
 	static GK_Template create(GK_Dungeon d) {
 		let p = new();
-		p._MGL = GK.MAX_GATEWAY_LINES;
-		p._ZS = GK.ZONE_SIZE;
+		p._MGL = d.config.gatewayLines;
+		p._ZS = d.config.zoneSize;
 		p.dungeon = d;
 		p.scanPortals();
 		return p;

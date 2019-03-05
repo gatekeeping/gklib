@@ -19,13 +19,13 @@ class GK_Game : Thinker
 		return dungeons[index] = dungeon;
 	}
 	
-	GK_Dungeon prepareDungeon(int index, GK_LevelInit lc) {
+	GK_Dungeon prepareDungeon(int index, GK_LevelInit lc, GK_Config config) {
 		let d = getDungeon(index);
 		if (d) {
 			d.rehydrate(lc);
 			return d;
 		}
-		return setDungeon(index, GK_Dungeon.create(lc));
+		return setDungeon(index, GK_Dungeon.create(lc, config));
 	}
 
 }

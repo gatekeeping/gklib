@@ -1,16 +1,16 @@
 class GK_LevelInit : LevelCompatibility
 {
-	protected void apply(name checksum, string mapname)
+	protected void apply(name checksum, string mapName)
 	{
 		if (mapname ~== "TITLEMAP") return;
 
 		console.printf("GK: Initializing level %i (%s)",
-			level.levelnum, mapname);
+			level.levelnum, mapName);
 		
-		let conf = GK_Config.create("GATEKEEP");
+		let config = GK_Config.create("GATEKEEP", mapName);
 		
 		// build the dungeon
-		GK.getGame().prepareDungeon(level.levelnum, self);
+		GK.getGame().prepareDungeon(level.levelnum, self, config);
 		
 		console.printf("GK: Done initializing level");
 	}

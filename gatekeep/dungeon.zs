@@ -4,8 +4,11 @@ class GK_Dungeon play
 	bool isReady;
 
 	transient GK_LevelInit levelInit; // need this for static portals, moving vertices.
+	
+	GK_Config config;
 	GK_Template template;
 	GK_Playfield playfield;
+	
 	int lastLineId;
 	
 	int portalCounter;
@@ -14,10 +17,11 @@ class GK_Dungeon play
 	int linkedGatewayCounter;
 	int placedZoneCounter;
 	
-	static GK_Dungeon create(GK_LevelInit li) {
+	static GK_Dungeon create(GK_LevelInit li, GK_Config config) {
 		let p = new();
-		p.levelInit = li;
 		
+		p.levelInit = li;
+		p.config = config;
 		p.lastLineId = GK.FIRST_LINE_ID - 1;
 		
 		console.printf("GK: Generating dungeon");

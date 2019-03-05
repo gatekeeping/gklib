@@ -5,11 +5,8 @@ class GK_Playfield play
 
 	GK_Zone grid[GK.PLAYFIELD_SIZE][GK.PLAYFIELD_SIZE];
 	
-	GK_Gateway todo[GK.MAX_GATEWAYS];
-	int todoCount;
-	
-	GK_Gateway shuffled[GK.MAX_GATEWAYS];
-	int shuffledCount;
+	array<GK_Gateway> todo;
+	array<GK_Gateway> shuffled;
 	
 	static GK_Playfield create(GK_Dungeon d) {
 		let p = new();
@@ -21,7 +18,6 @@ class GK_Playfield play
 	// put all gateways in an array and shuffle it
 	void shuffle() {
 		let t = dungeon.template;
-		shuffledCount = 0;
 		
 		// put all gateways in an array
 		for (int x = 0; x < GK.TEMPLATE_SIZE; x++) {
@@ -31,12 +27,12 @@ class GK_Playfield play
 			for (int face = 0; face < 4; face++) {
 				let gate = zone.templateGates[face];
 				if (gate == null) continue;
-				shuffled[shuffledCount++] = gate;
+				shuffled.push(gate);
 			}
 		}}
 		
 		// shuffle it
-		let i = shuffledCount - 1;
+		let i = shuffled.size() - 1;
 		while (--i > 0) {
 			let j = random[GK_random](0, i), k = shuffled[i];
 			shuffled[i] = shuffled[j];
@@ -45,12 +41,11 @@ class GK_Playfield play
 	}
 	
 	GK_Gateway pickTodo(void) {
-		let last = todoCount - 1;
+		let last = todo.size() - 1;
 		let i = random[GK_random](0, last);
 		let result = todo[i];
 		todo[i] = todo[last];
-		todo[last] = null;
-		--todoCount;
+		todo.pop();
 		return result;
 	}
 	
@@ -62,7 +57,7 @@ class GK_Playfield play
 		if (y < 0 || y >= GK.PLAYFIELD_SIZE) return false;
 		if (grid[x][y] != null) return false;
 		
-		// FIXME // if (!checkAdjacent(x, y, edge, line)) return false;
+		// TODO: do better placement thing here
 		
 		grid[x][y] = g.zone;
 		
@@ -80,7 +75,7 @@ class GK_Playfield play
 			g.zone.gates[f] = neighbor;
 			neighbor.face = f;
 			neighbor.placed = true;
-			todo[todoCount++] = neighbor;
+			todo.push(neighbor);
 		}
 		
 		++dungeon.placedZoneCounter;
@@ -131,8 +126,6 @@ class GK_Playfield play
 	// Rotates a point counterclockwise around origin, 90 deg * rotation.
 	Vector2 rotatePoint(Vector2 point, Vector2 origin, int rotation) {
 		let v = point - origin;  // translate origin to 0,0
-		
-		// TODO: Are these correct?
 		
 		// rotate around origin.
 		switch(rotation) {
@@ -254,6 +247,7 @@ class GK_Playfield play
 		do {
 			let i = pickTodo();
 			if (i.assigned) continue;
+			let shuffledCount = shuffled.size();
 			for (int k = 0; k < shuffledCount; k++) {
 				let j = shuffled[k];
 
@@ -267,7 +261,7 @@ class GK_Playfield play
 				i.assign(j);
 				break;
 			}
-		} until (todoCount < 1);
+		} until (todo.size() < 1);
 
 		finalize();
 		
