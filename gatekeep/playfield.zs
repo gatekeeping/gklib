@@ -10,10 +10,12 @@ class GK_Playfield play
 	array<GK_Gateway> shuffled;
 	
 	int gridSize;
+	int templateSize;
 	
 	static GK_Playfield create(GK_Dungeon d) {
 		let p = new();
 		p.dungeon = d;
+		p.templateSize = d.config.templateSize;
 		p.gridSize = d.config.playfieldSize;
 		p.grid = GK_Grid.create(p.gridSize);
 		p.init();
@@ -25,8 +27,8 @@ class GK_Playfield play
 		let t = dungeon.template;
 		
 		// put all gateways in an array
-		for (int x = 0; x < GK.TEMPLATE_SIZE; x++) {
-		for (int y = 0; y < GK.TEMPLATE_SIZE; y++) {
+		for (int x = 0; x < templateSize; x++) {
+		for (int y = 0; y < templateSize; y++) {
 			let zone = t.grid.get(x, y);
 			if (zone == null) continue;
 			for (int face = 0; face < 4; face++) {
@@ -60,20 +62,16 @@ class GK_Playfield play
 	bool putCell(int x, int y, int face, GK_Gateway g) {
 		if (x < 0 || x >= gridSize) return false;
 		if (y < 0 || y >= gridSize) return false;
-		// if (grid[x][y] != null) return false;
 		if (grid.get(x, y) != null) return false;
 		
 		// TODO: do better placement thing here
 		
-		// grid[x][y] = g.zone;
 		grid.set(x, y, g.zone);
 		
 		g.zone.x = x;
 		g.zone.y = y; 
 		
 		g.zone.face = (face + 4 - g.templateFace) % 4;
-		
-		// console.printf("f %i, t %i, g.zone.face %i", face, g.templateFace, g.zone.face);
 		
 		for (let i = 0; i < 4; i++) {
 			let f = (i + face) % 4;
@@ -116,7 +114,6 @@ class GK_Playfield play
 				case GK.WEST: x2 -= 1; break;
 				case GK.SOUTH: y2 += 1; break;
 			}
-			// if (grid[x][y] == null) continue;
 			
 			let z = grid.get(x, y);
 			if (z == null) continue;

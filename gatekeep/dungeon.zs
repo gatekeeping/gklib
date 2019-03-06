@@ -22,7 +22,7 @@ class GK_Dungeon play
 		
 		p.levelInit = li;
 		p.config = config;
-		p.lastLineId = GK.FIRST_LINE_ID - 1;
+		p.lastLineId = config.firstLineId - 1;
 		
 		console.printf("GK: Generating dungeon");
 		
@@ -43,7 +43,7 @@ class GK_Dungeon play
 	void rehydrate(GK_LevelInit li) {
 		console.printf("GK: Rehydrating dungeon...");
 		levelInit = li;
-		lastLineId = GK.FIRST_LINE_ID - 1;
+		lastLineId = config.firstLineId - 1;
 		playfield.finalize();
 		console.printf("GK: Done rehydrating dungeon.");
 		return;

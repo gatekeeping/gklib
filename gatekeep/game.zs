@@ -1,7 +1,9 @@
 // The Game singleton holds a list of Dungeons.
 class GK_Game : Thinker
 {
-	GK_Dungeon dungeons[GK.MAX_LEVELS];
+	const MAX_LEVELS = 100;
+
+	GK_Dungeon dungeons[MAX_LEVELS];
 
 	static GK_Game getInstance() {
 		let p = GK_Game(ThinkerIterator.create("GK_Game", STAT_STATIC).next());

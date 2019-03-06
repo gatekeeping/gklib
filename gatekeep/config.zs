@@ -3,24 +3,36 @@ class GK_Config
 {
 	string mapName;
 	
+	const DEFAULT_ZONE_SIZE = 4096;
+	const DEFAULT_PLAYFIELD_SIZE = 128;
+	const DEFAULT_GATEWAY_LINES = 15;
+	const DEFAULT_FIRST_LINE_ID = 11000;
+	const DEFAULT_PORTAL_TYPE = 3;
+	
+	const MAP_QUADRANT_SIZE = 32768;
+	
 	// things that can set in config file
 	
 	int zoneSize; // Width and height of each zone.
 	int playfieldSize; // Playfield zone grid rows/cols.
 	int gatewayLines; // Max portals in a gateway. Must be odd.
+	int firstLineId;  // reserves line ids beginning with this number
+	int portalType;  // portal type 2 = normal, 3 = static
 	
 	// things computed based on the values above
 	
 	int templateSize; // template zone grid rows/cols
-	int maxZones;
 	
 	static GK_Config create(string lumpName, string mapName) {
 		let p = new();
 		
-		p.zoneSize = GK.ZONE_SIZE;
-		p.playfieldSize = GK.PLAYFIELD_SIZE;
-		p.gatewayLines =  GK.MAX_GATEWAY_LINES;
 		p.mapName = mapName;
+		
+		p.zoneSize = DEFAULT_ZONE_SIZE;
+		p.playfieldSize = DEFAULT_PLAYFIELD_SIZE;
+		p.gatewayLines = DEFAULT_GATEWAY_LINES;
+		p.firstLineId = DEFAULT_FIRST_LINE_ID;
+		p.portalType = DEFAULT_PORTAL_TYPE;
 		
 		return p.parse(lumpName).finalize();
 	}
@@ -58,7 +70,7 @@ class GK_Config
 	}
 	
 	GK_Config finalize() {
-		templateSize = 32768 / zoneSize;
+		templateSize = MAP_QUADRANT_SIZE / zoneSize;
 		return self;
 	}
 	
@@ -96,14 +108,16 @@ class GK_Config
 	void setOption(string section, string title, string value) {
 		if (!(section ~== mapName || section ~== "DefaultMap")) return;
 		
-		console.printf("%s, %s, %s", section, title, value);
-		
 		if (title ~== "zoneSize") {
 			zoneSize = value.toInt();
 		} else if (title ~== "playfieldSize") {
 			playfieldSize = value.toInt();
 		} else if (title ~== "gatewayLines") {
 			gatewayLines = value.toInt();
+		} else if (title ~== "firstLineId") {
+			firstLineId = value.toInt();
+		} else if (title ~== "portalType") {
+			portalType = value.toInt();
 		}
 	}
 }

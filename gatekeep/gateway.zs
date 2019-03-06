@@ -8,6 +8,7 @@ class GK_Gateway play
 	
 	array<int> portals;
 	int gatewayLines;
+	int portalType;
 	
 	bool assigned;
 	bool placed;
@@ -17,6 +18,7 @@ class GK_Gateway play
 		p.zone = z;
 		p.templateFace = f;
 		p.gatewayLines = z.dungeon.config.gatewayLines;
+		p.portalType = z.dungeon.config.portalType;
 		for (let i = 0; i < p.gatewayLines; i++) p.portals.push(-1);
 		return p;
 	}
@@ -58,11 +60,11 @@ class GK_Gateway play
 			
 			level.Lines[iA].special = Line_SetPortal;
 			level.Lines[iA].args[0] = idB;
-			level.Lines[iA].args[2] = GK.PORTAL_TYPE;
+			level.Lines[iA].args[2] = portalType;
 			
 			level.Lines[iB].special = Line_SetPortal;
 			level.Lines[iB].args[0] = idA;
-			level.Lines[iB].args[2] = GK.PORTAL_TYPE;
+			level.Lines[iB].args[2] = portalType;
 	
 			assigned = true;
 			other.assigned = true;
