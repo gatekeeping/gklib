@@ -21,8 +21,9 @@ class GK_Zone play
 		p.dungeon = d;
 		p.templateX = tx;
 		p.templateY = ty;
-		int h = GK.ZONE_SIZE / 2;
-		p.templateCenter = (tx * GK.ZONE_SIZE + h, ty * GK.ZONE_SIZE + h);
+		let zs = d.config.zoneSize;
+		let h = zs / 2;
+		p.templateCenter = (tx * zs + h, ty * zs + h);
 		++d.zoneCounter;
 		return p;
 	}

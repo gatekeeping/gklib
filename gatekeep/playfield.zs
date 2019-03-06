@@ -1,16 +1,21 @@
 // A Playfield stores the position of Zones in the generated dungeon.
+
 class GK_Playfield play
 {
 	GK_Dungeon dungeon;
-
-	GK_Zone grid[GK.PLAYFIELD_SIZE][GK.PLAYFIELD_SIZE];
+	
+	GK_Grid grid;
 	
 	array<GK_Gateway> todo;
 	array<GK_Gateway> shuffled;
 	
+	int gridSize;
+	
 	static GK_Playfield create(GK_Dungeon d) {
 		let p = new();
 		p.dungeon = d;
+		p.gridSize = d.config.playfieldSize;
+		p.grid = GK_Grid.create(p.gridSize);
 		p.init();
 		return p;
 	}
@@ -22,7 +27,7 @@ class GK_Playfield play
 		// put all gateways in an array
 		for (int x = 0; x < GK.TEMPLATE_SIZE; x++) {
 		for (int y = 0; y < GK.TEMPLATE_SIZE; y++) {
-			let zone = t.grid[x][y];
+			let zone = t.grid.get(x, y);
 			if (zone == null) continue;
 			for (int face = 0; face < 4; face++) {
 				let gate = zone.templateGates[face];
@@ -53,13 +58,15 @@ class GK_Playfield play
 	// and put all other gateways in the zone into the cell
 
 	bool putCell(int x, int y, int face, GK_Gateway g) {
-		if (x < 0 || x >= GK.PLAYFIELD_SIZE) return false;
-		if (y < 0 || y >= GK.PLAYFIELD_SIZE) return false;
-		if (grid[x][y] != null) return false;
+		if (x < 0 || x >= gridSize) return false;
+		if (y < 0 || y >= gridSize) return false;
+		// if (grid[x][y] != null) return false;
+		if (grid.get(x, y) != null) return false;
 		
 		// TODO: do better placement thing here
 		
-		grid[x][y] = g.zone;
+		// grid[x][y] = g.zone;
+		grid.set(x, y, g.zone);
 		
 		g.zone.x = x;
 		g.zone.y = y; 
@@ -99,8 +106,8 @@ class GK_Playfield play
 	// Check for any adjacent areas with matching portal lines
 	// that aren't linked yet, and link them up.
 	void linkMorePortals(void) {
-		for (int x = 0; x < GK.PLAYFIELD_SIZE; x++) {
-		for (int y = 0; y < GK.PLAYFIELD_SIZE; y++) {
+		for (int x = 0; x < gridSize; x++) {
+		for (int y = 0; y < gridSize; y++) {
 		for (int e = 0; e < 4; e++) {
 			int x2 = x, y2 = y;
 			switch (e) {
@@ -109,13 +116,18 @@ class GK_Playfield play
 				case GK.WEST: x2 -= 1; break;
 				case GK.SOUTH: y2 += 1; break;
 			}
-			if (grid[x][y] == null) continue;
-			let a = grid[x][y].gates[e];
+			// if (grid[x][y] == null) continue;
+			
+			let z = grid.get(x, y);
+			if (z == null) continue;
+			
+			let a = z.gates[e];
 			if (a == null) continue;
-			if (x2 >= 0 && x2 < GK.PLAYFIELD_SIZE &&
-				y2 >=0 && y2 < GK.PLAYFIELD_SIZE) {
-				if (grid[x2][y2] == null) continue;
-				let b = grid[x2][y2].gates[(e + 2) % 4];
+			if (x2 >= 0 && x2 < gridSize &&
+				y2 >=0 && y2 < gridSize) {
+				let z2 = grid.get(x2, y2);
+				if (z2 == null) continue;
+				let b = z2.gates[(e + 2) % 4];
 				if (GK_Gateway.checkMatch(a, b))
 					a.assign(b);
 			}
@@ -139,8 +151,9 @@ class GK_Playfield play
 	
 	GK_Zone getZone(Vector2 p) {
 		if (p.x <= 0 || p.y <= 0) return null;
-		int gx = p.x / GK.ZONE_SIZE, gy = p.y / GK.ZONE_SIZE;
-		return dungeon.template.grid[gx][gy];
+		let zs = dungeon.config.zoneSize;
+		int x = p.x / zs, y = p.y / zs;
+		return dungeon.template.grid.get(x, y);
 	}
 	
 	Vector2 rotateInZone(Vector2 p) {
@@ -165,7 +178,7 @@ class GK_Playfield play
 		let zone = getZone(p);
 		if (zone == null) return false;
 		let c = zone.templateCenter;
-		let s = GK.ZONE_SIZE * 0.25;
+		let s = dungeon.config.zoneSize * 0.25;
 		
 		if (p.x > c.x + s && isAssigned(zone, GK.EAST)) return true;
 		if (p.x < c.x - s && isAssigned(zone, GK.WEST)) return true;
@@ -209,8 +222,9 @@ class GK_Playfield play
 	
 	// try to place the starting zone.
 	bool placeStartingZone() {
-		let x = GK.PLAYFIELD_SIZE / 2, y = GK.PLAYFIELD_SIZE / 2;
-		let z = dungeon.template.grid[0][0];
+		let x = gridSize / 2;
+		let y = x;
+		let z = dungeon.template.grid.get(0, 0);
 		let didWork = false;
 		
 		if (z == null) {

@@ -58,7 +58,7 @@ class GK_Config
 	}
 	
 	GK_Config finalize() {
-		// nothing to do here yet
+		templateSize = 32768 / zoneSize;
 		return self;
 	}
 	

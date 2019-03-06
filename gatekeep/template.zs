@@ -3,8 +3,8 @@
 class GK_Template play
 {
 	GK_Dungeon dungeon;
-
-	GK_Zone grid[GK.TEMPLATE_SIZE][GK.TEMPLATE_SIZE];
+	
+	GK_Grid grid;
 	
 	int _MGL;
 	int _ZS;
@@ -13,6 +13,7 @@ class GK_Template play
 		let p = new();
 		p._MGL = d.config.gatewayLines;
 		p._ZS = d.config.zoneSize;
+		p.grid = GK_Grid.create(d.config.templateSize);
 		p.dungeon = d;
 		p.scanPortals();
 		return p;
@@ -28,10 +29,10 @@ class GK_Template play
 	}
 	
 	GK_Zone getZone(int x, int y) {
-		let p = grid[x][y];
+		let p = grid.get(x, y);
 		if (p != null) return p;
 		p = GK_Zone.create(dungeon, x, y);
-		grid[x][y] = p;
+		grid.set(x, y, p);
 		return p;
 	}
 	
