@@ -10,8 +10,7 @@ class GK play
 	}
 
 	// get the Game singleton
-	play static GK_Game getGame() {
+	static GK_Game getGame() {
 		return GK_Game.getInstance();
 	}
-
 }

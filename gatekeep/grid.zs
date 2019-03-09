@@ -1,6 +1,6 @@
 // a grid of zones
-class GK_Grid play {
-	
+class GK_Grid play
+{
 	int width;
 	int height;
 	array<GK_Zone> cells;

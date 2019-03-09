@@ -1,7 +1,6 @@
 // A Gateway is a set of portal lines on one edge of a Zone.
 class GK_Gateway play
 {
-	
 	GK_Zone zone;
 	int templateFace; // direction it's facing in template
 	int face; // direction it's facing on playfield
