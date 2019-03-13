@@ -11,12 +11,14 @@ class GK_Playfield play
 	
 	int gridSize;
 	int templateSize;
+	bool strictPlacement;
 	
 	static GK_Playfield create(GK_Dungeon d) {
 		let p = new();
 		p.dungeon = d;
 		p.templateSize = d.config.templateSize;
 		p.gridSize = d.config.playfieldSize;
+		p.strictPlacement = d.config.strictPlacement;
 		p.grid = GK_Grid.create(p.gridSize);
 		p.init();
 		return p;
@@ -56,6 +58,37 @@ class GK_Playfield play
 		return result;
 	}
 	
+	
+	bool checkStrictPlacement(int x, int y, int face, GK_Gateway g) {
+		if (!strictPlacement) return true;
+		
+		
+		for (let i = 0; i < 4; i++) {
+			let f = (i + face) % 4;
+			let neighbor = g.getNeighbor(i);
+			if (neighbor == null) continue;
+
+			let x2 = x, y2 = y;
+			
+			switch (f) {
+				case GK.EAST: x2 = x + 1; break;
+				case GK.NORTH: y2 = y - 1; break;
+				case GK.WEST: x2 = x - 1; break;
+				case GK.SOUTH: y2 = y + 1; break;
+			}
+			
+			let z = grid.get(x2, y2);
+			if (!z) continue;
+			
+			let g2 = z.gates[(f + 2) % 4];
+			if (!g2) continue;
+			
+			if (!GK_Gateway.checkMatch(neighbor, g2)) return false;
+		}
+		
+		return true;
+	}
+	
 	// Put a gateway on one face of a cell,
 	// and put all other gateways in the zone into the cell
 
@@ -63,8 +96,7 @@ class GK_Playfield play
 		if (x < 0 || x >= gridSize) return false;
 		if (y < 0 || y >= gridSize) return false;
 		if (grid.get(x, y) != null) return false;
-		
-		// TODO: do better placement thing here
+		if (!checkStrictPlacement(x, y, face, g)) return false;
 		
 		grid.set(x, y, g.zone);
 		
@@ -120,8 +152,7 @@ class GK_Playfield play
 			
 			let a = z.gates[e];
 			if (a == null) continue;
-			if (x2 >= 0 && x2 < gridSize &&
-				y2 >=0 && y2 < gridSize) {
+			if (x2 >= 0 && x2 < gridSize && y2 >=0 && y2 < gridSize) {
 				let z2 = grid.get(x2, y2);
 				if (z2 == null) continue;
 				let b = z2.gates[(e + 2) % 4];
@@ -190,7 +221,8 @@ class GK_Playfield play
 	void prepareActors() {
 		let it = ThinkerIterator.create("Actor");
 		Actor a;
-		while (a = Actor(it.next())) {
+		
+		while (a = Actor(it.next())) {		
 			let s = a.spawnPoint;
 			if (isBehindPortal((s.x, s.y))) {
 				a.destroy();
@@ -204,7 +236,8 @@ class GK_Playfield play
 	
 	void hideLines() {
 		for (int i = 0; i < level.lines.size(); i++) {
-			if (isBehindPortal((level.lines[i].v2.p + level.lines[i].v1.p) * 0.5)) {
+			let v1 = level.lines[i].v1, v2 = level.lines[i].v2;
+			if (isBehindPortal((v2.p + v1.p) * 0.5)) {
 				dungeon.levelInit.hideLine(i);
 			}
 		}

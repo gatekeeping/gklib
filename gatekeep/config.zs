@@ -8,6 +8,7 @@ class GK_Config
 	const DEFAULT_GATEWAY_LINES = 15;
 	const DEFAULT_FIRST_LINE_ID = 11000;
 	const DEFAULT_PORTAL_TYPE = 3;
+	const DEFAULT_STRICT_PLACEMENT = 0;
 	
 	const MAP_QUADRANT_SIZE = 32768;
 	
@@ -18,6 +19,7 @@ class GK_Config
 	int gatewayLines; // Max portals in a gateway. Must be odd.
 	int firstLineId;  // reserves line ids beginning with this number
 	int portalType;  // portal type 2 = normal, 3 = static
+	bool strictPlacement;  // prevents unlinked gateways bordering each other
 	
 	// things computed based on the values above
 	
@@ -33,6 +35,7 @@ class GK_Config
 		p.gatewayLines = DEFAULT_GATEWAY_LINES;
 		p.firstLineId = DEFAULT_FIRST_LINE_ID;
 		p.portalType = DEFAULT_PORTAL_TYPE;
+		p.strictPlacement = DEFAULT_STRICT_PLACEMENT;
 		
 		return p.parse(lumpName).finalize();
 	}
@@ -118,6 +121,8 @@ class GK_Config
 			firstLineId = value.toInt();
 		} else if (title ~== "portalType") {
 			portalType = value.toInt();
+		} else if (title ~== "strictPlacement") {
+			strictPlacement = value ~== "true";
 		}
 	}
 }
