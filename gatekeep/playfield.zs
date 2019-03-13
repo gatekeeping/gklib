@@ -62,11 +62,9 @@ class GK_Playfield play
 	bool checkStrictPlacement(int x, int y, int face, GK_Gateway g) {
 		if (!strictPlacement) return true;
 		
-		
 		for (let i = 0; i < 4; i++) {
 			let f = (i + face) % 4;
 			let neighbor = g.getNeighbor(i);
-			if (neighbor == null) continue;
 
 			let x2 = x, y2 = y;
 			
@@ -78,10 +76,9 @@ class GK_Playfield play
 			}
 			
 			let z = grid.get(x2, y2);
-			if (!z) continue;
+			if (!z) continue; // no zone there? this gate's okay.
 			
 			let g2 = z.gates[(f + 2) % 4];
-			if (!g2) continue;
 			
 			if (!GK_Gateway.checkMatch(neighbor, g2)) return false;
 		}
