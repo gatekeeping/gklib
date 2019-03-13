@@ -112,6 +112,7 @@ class GK_Playfield play
 			todo.push(neighbor);
 		}
 		
+		g.zone.placed = true;
 		++dungeon.placedZoneCounter;
 		return true;
 	}
@@ -194,14 +195,33 @@ class GK_Playfield play
 		}
 	}
 	
+	// rotate floor/ceiling textures along with geometry
+	void rotateSectors() {
+		for (int i = 0; i < level.sectors.size(); i++) {
+			Sector s = level.sectors[i];
+			if (s.lines.size() < 1) continue;
+			
+			let zone = getZone(s.lines[0].v1.p);
+			if (zone == null) return;
+			
+			let a = 360.0 - zone.face * 90.0;
+			
+			s.setAngle(Sector.floor, a + s.getAngle(Sector.floor, a));
+			s.setAngle(Sector.ceiling, a + s.getAngle(Sector.ceiling, a));
+		}
+	}
+	
 	private static bool isAssigned(GK_Zone z, int d) {
 		let g = z.templateGates[d];
 		return g && g.assigned;
 	}
 	
+	// check whether a point is behind a portal / in an unplaced zone.
 	bool isBehindPortal(Vector2 p) {
 		let zone = getZone(p);
 		if (zone == null) return false;
+		if (!zone.placed) return true;
+		
 		let c = zone.templateCenter;
 		let s = dungeon.config.zoneSize * 0.25;
 		
@@ -230,13 +250,18 @@ class GK_Playfield play
 		}
 	}
 	
+	// check if a line should be hidden
+	// because it's a portal, or behind a portal
+	bool shouldHideLine(int i) {
+		if (GK.getLineStyle(i)) return true;
+		let v1 = level.lines[i].v1, v2 = level.lines[i].v2;
+		if (isBehindPortal((v2.p + v1.p) * 0.5)) return true;
+		return false;
+	}
 	
 	void hideLines() {
 		for (int i = 0; i < level.lines.size(); i++) {
-			let v1 = level.lines[i].v1, v2 = level.lines[i].v2;
-			if (isBehindPortal((v2.p + v1.p) * 0.5)) {
-				dungeon.levelInit.hideLine(i);
-			}
+			if (shouldHideLine(i)) dungeon.levelInit.hideLine(i);
 		}
 	}
 	
@@ -244,6 +269,7 @@ class GK_Playfield play
 	void finalize() {
 		linkMorePortals();
 		hideLines();
+		// rotateSectors();
 		rotateVertices();
 	}
 	
@@ -305,7 +331,6 @@ class GK_Playfield play
 		} until (todo.size() < 1);
 
 		finalize();
-		
 	}  
 	 
 }

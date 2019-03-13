@@ -15,6 +15,7 @@ class GK_Zone play
 	GK_Gateway gates[4];
 	
 	int face;
+	bool placed;
 	
 	static GK_Zone create(GK_Dungeon d, int tx, int ty) {
 		let p = new();

@@ -10,6 +10,7 @@ class GK_Events : EventHandler
 		if (d == null) return;
 		if (d.isReady) return;
 		d.playfield.prepareActors();
+		d.playfield.rotateSectors();
 		d.isReady = true;
 	}
 }
