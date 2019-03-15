@@ -247,6 +247,8 @@ class GK_Playfield play
 			}
 			let q = rotateInZone((s.x, s.y));
 			a.setOrigin((q.x, q.y, s.z), false);
+			if (a.bSPAWNCEILING)
+				a.setOrigin((q.x, q.y, a.ceilingZ), false);
 		}
 	}
 	
