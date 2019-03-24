@@ -241,14 +241,22 @@ class GK_Playfield play
 		
 		while (a = Actor(it.next())) {		
 			let s = a.spawnPoint;
+			// remove actors behind portals
 			if (isBehindPortal((s.x, s.y))) {
 				a.destroy();
 				continue;
 			}
+			// rotate actors with zone geometry
 			let q = rotateInZone((s.x, s.y));
 			a.setOrigin((q.x, q.y, s.z), false);
 			if (a.bSPAWNCEILING)
 				a.setOrigin((q.x, q.y, a.ceilingZ), false);
+			// ...and set new angle for actors
+			// TODO: skip it for actors with special angle handling (dynlights)
+			let zone = getZone((s.x, s.y));
+			if (!zone) continue;
+			let za = zone.face * 90.0;
+			a.angle = (a.angle + za) % 360.0;
 		}
 	}
 	
