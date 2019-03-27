@@ -31,7 +31,10 @@ class GK_Dungeon play
 		console.printf("GK: Found %i portals in %i gateways",
 			p.portalCounter, p.gatewayCounter);
 		
-		p.playfield = GK_Playfield.create(p);
+		let tries = config.maxTries;
+		
+		do p.playfield = GK_Playfield.create(p);
+		until (p.playfield.isGood || --tries < 0);
 		
 		console.printf("GK: Placed %i of %i zones",
 			p.placedZoneCounter, p.zoneCounter);

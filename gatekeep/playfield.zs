@@ -12,6 +12,7 @@ class GK_Playfield play
 	int gridSize;
 	int templateSize;
 	bool strictPlacement;
+	bool isGood;
 	
 	static GK_Playfield create(GK_Dungeon d) {
 		let p = new();
@@ -316,6 +317,9 @@ class GK_Playfield play
 		
 		shuffle();
 
+		
+		dungeon.placedZoneCounter = 0;
+		
 		if (!placeStartingZone()) return;
 		
 		// randomly pick gateways out of the todo list
@@ -341,6 +345,10 @@ class GK_Playfield play
 		} until (todo.size() < 1);
 
 		finalize();
+		
+		if (dungeon.placedZoneCounter >= dungeon.config.minZones)
+			isGood = true;
+		
 	}  
 	 
 }
