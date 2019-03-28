@@ -12,7 +12,6 @@ class GK_Playfield play
 	int gridSize;
 	int templateSize;
 	bool strictPlacement;
-	bool isGood;
 	
 	static GK_Playfield create(GK_Dungeon d) {
 		let p = new();
@@ -58,7 +57,6 @@ class GK_Playfield play
 		todo.pop();
 		return result;
 	}
-	
 	
 	bool checkStrictPlacement(int x, int y, int face, GK_Gateway g) {
 		if (!strictPlacement) return true;
@@ -160,7 +158,8 @@ class GK_Playfield play
 			}
 		}}}
 	}
-		// POINT MOVING SHIT
+	
+	// POINT MOVING SHIT
 
 	// Rotates a point counterclockwise around origin, 90 deg * rotation.
 	Vector2 rotatePoint(Vector2 point, Vector2 origin, int rotation) {
@@ -212,7 +211,7 @@ class GK_Playfield play
 		}
 	}
 	
-	private static bool isAssigned(GK_Zone z, int d) {
+	static bool isAssigned(GK_Zone z, int d) {
 		let g = z.templateGates[d];
 		return g && g.assigned;
 	}
@@ -317,7 +316,6 @@ class GK_Playfield play
 		
 		shuffle();
 
-		
 		dungeon.placedZoneCounter = 0;
 		
 		if (!placeStartingZone()) return;
@@ -339,17 +337,28 @@ class GK_Playfield play
 				y = i.zone.y;
 				r = i.face;
 				if (!putAdjacent(x, y, r, j)) continue;
-				i.assign(j);
+				i.assign(j, true);
 				break;
 			}
 		} until (todo.size() < 1);
 
-		finalize();
-		
+		// finalize();
+	}
+	
+	// check if playfiled is valid; clear it if not.
+	bool validate() {
 		if (dungeon.placedZoneCounter >= dungeon.config.minZones)
-			isGood = true;
+			return true;
 		
-	}  
+		// clean up zones for next try
+		let g = dungeon.template.grid;
+		for (let i = g.cells.size(); i-- > 0;) {
+			let zone = g.cells[i];
+			if (!zone) continue;
+			zone.removeFromPlayfield();
+		}
+		return false;
+	}
 	 
 }
 

@@ -37,4 +37,14 @@ class GK_Zone play
 		++dungeon.gatewayCounter;
 		return p;
 	}
+	
+	void removeFromPlayfield() {
+		placed = false;
+		for (let i = 0; i < 4; i++) {
+			let g = gates[i];
+			if (!g) continue;
+			g.placed = false;
+			g.assigned = false;
+		}
+	}
 }

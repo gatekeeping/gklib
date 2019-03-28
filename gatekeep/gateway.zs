@@ -37,7 +37,7 @@ class GK_Gateway play
 	}
 	
 	// link up portals with another gateway
-	void assign(GK_Gateway other) {
+	void assign(GK_Gateway other, bool dryRun = false) {
 		if (other == null) return;
 				
 		let n = gatewayLines - 1;
@@ -54,16 +54,17 @@ class GK_Gateway play
 			
 			// 156:Line_SetPortal (targetline, thisline, type, planeanchor)
 			
-			let idA = createLineId(iA);
-			let idB = createLineId(iB);
-			
-			level.Lines[iA].special = Line_SetPortal;
-			level.Lines[iA].args[0] = idB;
-			level.Lines[iA].args[2] = portalType;
-			
-			level.Lines[iB].special = Line_SetPortal;
-			level.Lines[iB].args[0] = idA;
-			level.Lines[iB].args[2] = portalType;
+			if (!dryRun) {
+				let idA = createLineId(iA);
+				let idB = createLineId(iB);
+				level.Lines[iA].special = Line_SetPortal;
+				level.Lines[iA].args[0] = idB;
+				level.Lines[iA].args[2] = portalType;
+				
+				level.Lines[iB].special = Line_SetPortal;
+				level.Lines[iB].args[0] = idA;
+				level.Lines[iB].args[2] = portalType;
+			}
 	
 			assigned = true;
 			other.assigned = true;

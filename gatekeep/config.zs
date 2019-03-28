@@ -8,8 +8,8 @@ class GK_Config
 	const DEFAULT_GATEWAY_LINES = 15;
 	const DEFAULT_FIRST_LINE_ID = 11000;
 	const DEFAULT_PORTAL_TYPE = 3;
-	const DEFAULT_MIN_ZONES = 8;
-	const DEFAULT_MAX_TRIES = 3;
+	const DEFAULT_MIN_ZONES = 1;
+	const DEFAULT_MAX_TRIES = 20;
 	const DEFAULT_STRICT_PLACEMENT = 0;
 	
 	const MAP_QUADRANT_SIZE = 32768;
@@ -40,6 +40,7 @@ class GK_Config
 		p.firstLineId = DEFAULT_FIRST_LINE_ID;
 		p.portalType = DEFAULT_PORTAL_TYPE;
 		p.minZones = DEFAULT_MIN_ZONES;
+		p.maxTries = DEFAULT_MAX_TRIES;
 		p.strictPlacement = DEFAULT_STRICT_PLACEMENT;
 		
 		return p.parse(lumpName).finalize();

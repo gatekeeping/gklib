@@ -2,6 +2,7 @@
 class GK_Dungeon play
 {
 	bool isReady;
+	bool isInvalid;
 
 	transient GK_LevelInit levelInit; // need this for static portals, moving vertices.
 	
@@ -34,12 +35,21 @@ class GK_Dungeon play
 		let tries = config.maxTries;
 		
 		do p.playfield = GK_Playfield.create(p);
-		until (p.playfield.isGood || --tries < 0);
+		until (p.playfield.validate() || --tries < 0);
 		
-		console.printf("GK: Placed %i of %i zones",
-			p.placedZoneCounter, p.zoneCounter);
+		if (tries < 0) {
+			console.printf("GK: Failed to place at least %i of %i zones!",
+				config.minZones, p.zoneCounter);
+			p.isInvalid = true;
+			return p;
+		}
 		
-		console.printf("GK: Done generating dungeon.");
+		p.playfield.finalize();
+		
+		console.printf("GK: Placed %i of %i zones after %i attempts",
+			p.placedZoneCounter, p.zoneCounter, config.maxTries - tries + 1);
+		
+		console.printf("GK: Done generating dungeon");
 		return p;
 	}
 	
@@ -48,7 +58,7 @@ class GK_Dungeon play
 		levelInit = li;
 		lastLineId = config.firstLineId - 1;
 		playfield.finalize();
-		console.printf("GK: Done rehydrating dungeon.");
+		console.printf("GK: Done rehydrating dungeon");
 		return;
 	}
 			
