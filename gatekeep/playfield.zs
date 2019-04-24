@@ -12,6 +12,7 @@ class GK_Playfield play
 	int gridSize;
 	int templateSize;
 	bool strictPlacement;
+	double monsterDensity;
 	
 	static GK_Playfield create(GK_Dungeon d) {
 		let p = new();
@@ -19,6 +20,7 @@ class GK_Playfield play
 		p.templateSize = d.config.templateSize;
 		p.gridSize = d.config.playfieldSize;
 		p.strictPlacement = d.config.strictPlacement;
+		p.monsterDensity = d.config.monsterDensity;
 		p.grid = GK_Grid.create(p.gridSize);
 		p.init();
 		return p;
@@ -233,6 +235,11 @@ class GK_Playfield play
 		return false;
 	}
 	
+	bool shouldRemoveMonster(Actor a) {
+		return a.bISMONSTER && 
+			random[GK_random](1, 100) > monsterDensity * 100;
+	}
+	
 	// Prepare actors by rotating them with their zones,
 	// and removing them if they're hidden behind portals.
 	void prepareActors() {
@@ -243,6 +250,11 @@ class GK_Playfield play
 			let s = a.spawnPoint;
 			// remove actors behind portals
 			if (isBehindPortal((s.x, s.y))) {
+				a.destroy();
+				continue;
+			}
+			// remove monsters based on MonsterDensity setting
+			if (shouldRemoveMonster(a)) {
 				a.destroy();
 				continue;
 			}

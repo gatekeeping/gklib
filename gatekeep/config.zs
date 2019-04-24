@@ -11,6 +11,7 @@ class GK_Config
 	const DEFAULT_MIN_ZONES = 1;
 	const DEFAULT_MAX_TRIES = 20;
 	const DEFAULT_STRICT_PLACEMENT = 0;
+	const DEFAULT_MONSTER_DENSITY = 0.75;
 	
 	const MAP_QUADRANT_SIZE = 32768;
 	
@@ -24,6 +25,7 @@ class GK_Config
 	int minZones;  // minimum zones placed
 	int maxTries;  // maximum playfield generation tries
 	bool strictPlacement;  // prevents unlinked gateways bordering each other
+	double monsterDensity;  // fraction of monsters that will not be removed
 	
 	// things computed based on the values above
 	
@@ -42,6 +44,7 @@ class GK_Config
 		p.minZones = DEFAULT_MIN_ZONES;
 		p.maxTries = DEFAULT_MAX_TRIES;
 		p.strictPlacement = DEFAULT_STRICT_PLACEMENT;
+		p.monsterDensity = DEFAULT_MONSTER_DENSITY;
 		
 		return p.parse(lumpName).finalize();
 	}
@@ -133,6 +136,8 @@ class GK_Config
 			maxTries = value.toInt();
 		} else if (title ~== "strictPlacement") {
 			strictPlacement = value ~== "true";
+		} else if (title ~== "monsterDensity") {
+			monsterDensity =  value.toDouble();
 		}
 	}
 }

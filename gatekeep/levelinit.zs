@@ -19,6 +19,12 @@ class GK_LevelInit : LevelCompatibility
 		setVertex(index, x, y);
 	}
 	
+	protected void SetWallTexture(int line, int side, int texpart, TextureID texture)
+	{
+		if (!level.Lines[line].sidedef[side]) return;
+		level.Lines[line].sidedef[side].SetTexture(texpart, texture);
+	}
+	
 	void hideLine(int index) {
 		setLineFlags(index, Line.ML_DONTDRAW);
 	}
