@@ -248,13 +248,8 @@ class GK_Playfield play
 		
 		while (a = Actor(it.next())) {		
 			let s = a.spawnPoint;
-			// remove actors behind portals
-			if (isBehindPortal((s.x, s.y))) {
-				a.destroy();
-				continue;
-			}
-			// remove monsters based on MonsterDensity setting
-			if (shouldRemoveMonster(a)) {
+			// remove actors behind portals, monsters based on MonsterDensity
+			if (isBehindPortal((s.x, s.y)) || shouldRemoveMonster(a)) {
 				a.destroy();
 				continue;
 			}
